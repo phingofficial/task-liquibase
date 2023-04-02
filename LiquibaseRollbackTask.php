@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,58 +18,49 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
 
-use Phing\Type\DataType;
+use Phing\Exception\BuildException;
 
 /**
- * @author Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
- * @since 2.4.10
+ * Rollbacks the database changes.
+ *
+ * @author  Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
+ * @since   2.4.10
  * @package phing.tasks.ext.liquibase
  */
-class LiquibaseProperty extends DataType
+class LiquibaseRollbackTask extends AbstractLiquibaseTask
 {
-    private $name;
-    private $value;
+    protected $rollbackTag;
 
     /**
-     * @param $name
+     * Sets the name of the tag to roll back to.
+     *
+     * @param string the name to roll back to
      */
-    public function setName($name)
+    public function setRollbackTag($rollbackTag)
     {
-        $this->name = $name;
+        $this->rollbackTag = $rollbackTag;
     }
 
     /**
-     * @param $value
+     * @see AbstractTask::checkParams()
      */
-    public function setValue($value)
+    protected function checkParams()
     {
-        $this->value = $value;
-    }
+        parent::checkParams();
 
-    /**
-     * @param \Project $p
-     * @return string
-     * @throws \BuildException
-     */
-    public function getCommandline(\Project $p)
-    {
-        if ($this->isReference()) {
-            return $this->getRef($p)->getCommandline($p);
+        if (null === $this->rollbackTag) {
+            throw new BuildException('Please specify the tag to rollback to!');
         }
-
-        return sprintf("-D%s=%s", $this->name, escapeshellarg($this->value));
     }
 
     /**
-     * @param \Project $p
-     * @return mixed
-     * @throws \BuildException
+     * @see Task::main()
      */
-    public function getRef(\Project $p)
+    public function main()
     {
-        $dataTypeName = \StringHelper::substring(__CLASS__, strrpos(__CLASS__, '\\') + 1);
-        return $this->getCheckedRef(__CLASS__, $dataTypeName);
+        $this->checkParams();
+        $this->execute('rollback', escapeshellarg($this->rollbackTag));
     }
 }

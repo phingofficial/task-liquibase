@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,46 +18,23 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
 
 /**
- * Task for running liquibase commands that doesn't have their own
- * commands yet.
+ * Task to update the database to latest version of the changelog file.
  *
- * Parameters can be provided by nested <parameter name='foo' value='bar' /> tags.
- * That will result in --foo='bar' on the command line.
- *
- * @author  Joakim Israelsson <joakim.israelsson.86@gmail.com>
+ * @author  Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
+ * @since   2.4.10
  * @package phing.tasks.ext.liquibase
  */
-class LiquibaseTask extends AbstractLiquibaseTask
+class LiquibaseUpdateTask extends AbstractLiquibaseTask
 {
-
     /**
-     * What liquibase command you wish to run.
+     * @see Task::main()
      */
-    private $command;
-
-    /**
-     * @param $command
-     */
-    public function setCommand($command)
-    {
-        $this->command = (string) $command;
-    }
-
-    protected function checkParams()
-    {
-        parent::checkParams();
-
-        if (null === $this->command) {
-            throw new \BuildException('Please provide a liquibase command.');
-        }
-    }
-
     public function main()
     {
         $this->checkParams();
-        $this->execute($this->command, '');
+        $this->execute('update');
     }
 }

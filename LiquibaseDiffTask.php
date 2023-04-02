@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,7 +18,9 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
+
+use Phing\Exception\BuildException;
 
 /**
  * Task to create the diff between two databases. Will output the changes needed
@@ -74,15 +77,15 @@ class LiquibaseDiffTask extends AbstractLiquibaseTask
         parent::checkParams();
 
         if (null === $this->referenceUsername) {
-            throw new \BuildException('Please provide a username for the reference database acccess!');
+            throw new BuildException('Please provide a username for the reference database acccess!');
         }
 
         if (null === $this->referencePassword) {
-            throw new \BuildException('Please provide a password for the reference database acccess!');
+            throw new BuildException('Please provide a password for the reference database acccess!');
         }
 
         if (null === $this->referenceUrl) {
-            throw new \BuildException('Please provide a url for the reference database acccess!');
+            throw new BuildException('Please provide a url for the reference database acccess!');
         }
     }
 

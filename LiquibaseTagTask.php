@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,23 +18,52 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
+
+use Phing\Exception\BuildException;
 
 /**
- * Task to create a changelog file.
+ * Task to tag the current database state. In case you tag the database multiple
+ * times without applying a new changelog before, the tags will overwrite each
+ * other!
  *
  * @author  Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
  * @since   2.4.10
  * @package phing.tasks.ext.liquibase
  */
-class LiquibaseChangeLogTask extends AbstractLiquibaseTask
+class LiquibaseTagTask extends AbstractLiquibaseTask
 {
+    protected $tag;
+
+    /**
+     * Sets the name of tag which is used to mark the database state for
+     * possible future rollback.
+     *
+     * @param string the name to tag the database with
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
+    }
+
+    /**
+     * @see AbstractTask::checkParams()
+     */
+    protected function checkParams()
+    {
+        parent::checkParams();
+
+        if (null === $this->tag) {
+            throw new BuildException('Please specify the tag!');
+        }
+    }
+
     /**
      * @see Task::main()
      */
     public function main()
     {
         $this->checkParams();
-        $this->execute('generateChangeLog');
+        $this->execute('tag', escapeshellarg($this->tag));
     }
 }

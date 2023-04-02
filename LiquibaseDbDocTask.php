@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,30 +18,30 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
+
+use Phing\Exception\BuildException;
 
 /**
- * Task to tag the current database state. In case you tag the database multiple
- * times without applying a new changelog before, the tags will overwrite each
- * other!
+ * Task to create a javadoc-like documentation based on current database and
+ * changelog.
  *
  * @author  Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
  * @since   2.4.10
  * @package phing.tasks.ext.liquibase
  */
-class LiquibaseTagTask extends AbstractLiquibaseTask
+class LiquibaseDbDocTask extends AbstractLiquibaseTask
 {
-    protected $tag;
+    protected $outputDir;
 
     /**
-     * Sets the name of tag which is used to mark the database state for
-     * possible future rollback.
+     * Sets the output directory where the documentation gets generated to.
      *
-     * @param string the name to tag the database with
+     * @param string the output directory
      */
-    public function setTag($tag)
+    public function setOutputDir($outputDir)
     {
-        $this->tag = $tag;
+        $this->outputDir = $outputDir;
     }
 
     /**
@@ -50,8 +51,24 @@ class LiquibaseTagTask extends AbstractLiquibaseTask
     {
         parent::checkParams();
 
-        if (null === $this->tag) {
-            throw new \BuildException('Please specify the tag!');
+        if ((null === $this->outputDir) or !is_dir($this->outputDir)) {
+            if (!mkdir($this->outputDir, 0777, true)) {
+                throw new BuildException(
+                    sprintf(
+                        'The directory "%s" does not exist and could not be created!',
+                        $this->outputDir
+                    )
+                );
+            }
+        }
+
+        if (!is_writable($this->outputDir)) {
+            throw new BuildException(
+                sprintf(
+                    'The directory "%s" is not writable!',
+                    $this->outputDir
+                )
+            );
         }
     }
 
@@ -61,6 +78,6 @@ class LiquibaseTagTask extends AbstractLiquibaseTask
     public function main()
     {
         $this->checkParams();
-        $this->execute('tag', escapeshellarg($this->tag));
+        $this->execute('dbdoc', escapeshellarg($this->outputDir));
     }
 }

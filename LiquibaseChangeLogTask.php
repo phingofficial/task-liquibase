@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,16 +18,16 @@
  * <http://phing.info>.
  */
 
-namespace Phing\Task\Ext;
+namespace Phing\Task\Ext\Liquibase;
 
 /**
- * Task to update the database to latest version of the changelog file.
+ * Task to create a changelog file.
  *
  * @author  Stephan Hochdoerfer <S.Hochdoerfer@bitExpert.de>
  * @since   2.4.10
  * @package phing.tasks.ext.liquibase
  */
-class LiquibaseUpdateTask extends AbstractLiquibaseTask
+class LiquibaseChangeLogTask extends AbstractLiquibaseTask
 {
     /**
      * @see Task::main()
@@ -34,6 +35,6 @@ class LiquibaseUpdateTask extends AbstractLiquibaseTask
     public function main()
     {
         $this->checkParams();
-        $this->execute('update');
+        $this->execute('generateChangeLog');
     }
 }
